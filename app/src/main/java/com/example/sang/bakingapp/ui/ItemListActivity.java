@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import com.example.sang.bakingapp.modal.Recipe;
 import com.example.sang.bakingapp.modal.Steps;
 
 import java.util.List;
+
+import butterknife.BindView;
 
 /**
  * An activity representing a list of Items. This activity
@@ -42,6 +45,13 @@ public class ItemListActivity extends AppCompatActivity {
     private static final String RECIPE_KEY = "recipe_key";
     private static final String RECIPE_STEPS_KEY = "recipe_steps_key";
 
+    @BindView(R.id.btn_ingredients)
+    Button btnIngredients;
+
+    @BindView(R.id.item_list)
+    RecyclerView recyclerView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,24 +61,27 @@ public class ItemListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
-
         Intent intent = getIntent();
         recipe = intent.getParcelableExtra( RECIPE_KEY );
 
 
+
         if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
             mTwoPane = true;
         }
 
-        View recyclerView = findViewById(R.id.item_list);
+
         assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        setupRecyclerView( recyclerView );
+
+        btnIngredients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
     }
+
 
 
 
@@ -94,16 +107,12 @@ public class ItemListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Bundle arguments = new Bundle();
-                Steps steps = (Steps) view.getTag() ;
+                Steps steps = (Steps) view.getTag();
 
                 if (mTwoPane) {
-
-                    // Steps steps =
                     arguments.putParcelable(RECIPE_STEPS_KEY ,steps );
                     ItemDetailFragment fragment = new ItemDetailFragment();
-
                     fragment.setArguments(arguments);
-
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.item_detail_container, fragment)
                             .commit();
@@ -111,8 +120,7 @@ public class ItemListActivity extends AppCompatActivity {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
                     intent.putExtra(RECIPE_STEPS_KEY , steps);
-
-                    context.startActivity(intent);
+                    context.startActivity( intent );
                 }
             }
         };

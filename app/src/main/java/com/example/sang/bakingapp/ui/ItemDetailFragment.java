@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +23,7 @@ import com.google.android.exoplayer2.util.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Optional;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -38,7 +42,7 @@ public class ItemDetailFragment extends Fragment {
     @BindView(R.id.audio_view)
     PlayerView playerView;
 
-    @BindView(R.id.tv_recipe_instruction)
+    @Nullable @BindView(R.id.tv_recipe_instruction)
     TextView textView;
 
     @BindView(R.id.exo_fullscreen_icon)
@@ -48,11 +52,22 @@ public class ItemDetailFragment extends Fragment {
 
     public ItemDetailFragment() {}
 
+    int layout = R.layout.fragment_media_and_recipe_description;
+    int currentOrientation;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
 
+        currentOrientation = getResources().getConfiguration().orientation;
+
+        if( currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
+            layout =  R.layout.fragment_media_and_recipe_description_horizontal;
+            getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
+            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN ,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
 
 
         if (getArguments().containsKey(RECIPE_STEPS_KEY)) {
@@ -64,14 +79,19 @@ public class ItemDetailFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_media_and_recipe_description, container, false);
-        ButterKnife.bind( this , view);
-        if (mItem != null) {
 
+
+        View view = inflater.inflate(layout, container, false);
+        ButterKnife.bind( this , view);
+        if (mItem != null ) {
             previewUrl = mItem.getVideoURL();
-            textView.setText( mItem.getShortDescription() );
-         }
-        return view;
+
+            if( currentOrientation == Configuration.ORIENTATION_PORTRAIT){
+                textView.setText( mItem.getShortDescription() );
+            }
+        }
+
+         return view;
     }
     @Override
     public void onStart() {
@@ -117,24 +137,6 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-            params.width=params.MATCH_PARENT;
-            params.height=params.MATCH_PARENT;
-            textView.setVisibility( View.GONE);
-            playerView.setLayoutParams(params);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
-            params.width=params.MATCH_PARENT;
-            params.height=300;
-            textView.setVisibility( View.VISIBLE);
-
-            playerView.setLayoutParams(params);
-        }
-    }
 
     private void initializePlayer() {
 
@@ -149,8 +151,9 @@ public class ItemDetailFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     destroyVideo = false;
-                    Log.d("Tag","Click");
-                }
+                    getActivity().finish();
+
+             }
             });
 
         }
