@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
         rvBakingList.setAdapter( mRecipeAdapter );
         loadJson();
 
+
     }
 
     public void loadJson() {

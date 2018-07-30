@@ -1,27 +1,21 @@
 package com.example.sang.bakingapp.ui;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import butterknife.BindView;
@@ -34,29 +28,23 @@ import butterknife.ButterKnife;
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
 
     public static final String RECIPE_STEPS_KEY = "recipe_steps_key";
-    /**
-     * The dummy content this fragment is presenting.
-     */
-    private Steps mItem;
 
-    TextView textView;
-    private SimpleExoPlayer player;
+    private Steps mItem;
+    private String previewUrl;
+    private Context context;
 
     @BindView(R.id.audio_view)
     PlayerView playerView;
-    private int currentWindow;
-    private boolean playWhenReady;
-    private long playbackPosition;
 
+    @BindView(R.id.tv_recipe_instruction)
+    TextView textView;
 
-    private String previewUrl;
-    private Context context;
+    @BindView(R.id.exo_fullscreen_icon)
+    ImageView fullscreenIcon;
+
+    private boolean destroyVideo = true;
 
     public ItemDetailFragment() {}
 
@@ -79,143 +67,96 @@ public class ItemDetailFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_media_and_recipe_description, container, false);
         ButterKnife.bind( this , view);
         if (mItem != null) {
-            ((TextView) view.findViewById(R.id.tv_recipe_instruction)).setText(mItem.getShortDescription());
 
-
-            textView = view.findViewById(R.id.tv_recipe_instruction);
             previewUrl = mItem.getVideoURL();
+            textView.setText( mItem.getShortDescription() );
          }
         return view;
     }
     @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer();
-        }
+
+            //initializePlayer();
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if ((Util.SDK_INT <= 23 || player == null)) {
+
             initializePlayer();
-        }
+
+
     }
     @Override
     public void onPause() {
         super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
+        ExoPlayerVideoHandler.getInstance().goToBackground();
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
+
+            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if(destroyVideo){
+            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+            params.width=params.MATCH_PARENT;
+            params.height=params.MATCH_PARENT;
+            textView.setVisibility( View.GONE);
+            playerView.setLayoutParams(params);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) playerView.getLayoutParams();
+            params.width=params.MATCH_PARENT;
+            params.height=300;
+            textView.setVisibility( View.VISIBLE);
+
+            playerView.setLayoutParams(params);
         }
     }
 
     private void initializePlayer() {
 
+
         if ( previewUrl != null && playerView !=null ) {
+
             Uri uri = Uri.parse(previewUrl);
-            
+            ExoPlayerVideoHandler.getInstance().prepareExoPlayerForUri( context , uri , playerView);
+            ExoPlayerVideoHandler.getInstance().goToForeground();
 
-        }
-    }
-
-    private MediaSource buildMediaSource(Uri uri) {
-        return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory(getString(R.string.exoplayer_codelab))).
-                createMediaSource(uri);
-    }
-    private void releasePlayer() {
-        if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
-            playWhenReady = player.getPlayWhenReady();
-            player.release();
-            player = null;
-        }
-    }
-
-
-    public class ExoPlayerVideoHandler
-    {
-        private ExoPlayerVideoHandler instance;
-
-        public ExoPlayerVideoHandler getInstance(){
-            if(instance == null){
-                instance = new ExoPlayerVideoHandler();
-            }
-            return instance;
-        }
-
-        private Uri playerUri;
-        private boolean isPlayerPlaying;
-
-        private ExoPlayerVideoHandler(){}
-
-        public void prepareExoPlayerForUri(Context context, Uri uri,
-                                           PlayerView exoPlayerView){
-            if(context != null && uri != null && exoPlayerView != null){
-                if(!uri.equals(playerUri) || player == null){
-                    // Create a new player if the player is null or
-                    // we want to play a new video
-                    playerUri = uri;
-
-                    player = ExoPlayerFactory.newSimpleInstance(
-                            new DefaultRenderersFactory(context),
-                            new DefaultTrackSelector(), new DefaultLoadControl());
-
-
-
-                    playerView.setPlayer(player);
-
-                    playerView.setControllerHideOnTouch(false);
-
-                    boolean playWhenReady = false;
-                    player.setPlayWhenReady(playWhenReady);
-                    int currentWindow = 0;
-                    int playbackPosition = 0;
-                    player.seekTo(currentWindow, playbackPosition);
-
-
-                    // Do all the standard ExoPlayer code here...
-                    MediaSource mediaSource = buildMediaSource( playerUri );
-                    player.prepare(mediaSource, true, false);
+            fullscreenIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    destroyVideo = false;
+                    Log.d("Tag","Click");
                 }
-                player.clearVideoSurface();
-                player.setVideoSurfaceView(
-                        (SurfaceView)exoPlayerView.getVideoSurfaceView());
-                player.seekTo(player.getCurrentPosition() + 1);
-                exoPlayerView.setPlayer(player);
-            }
-        }
+            });
 
-        public void releaseVideoPlayer(){
-            if(player != null)
-            {
-                player.release();
-            }
-            player = null;
-        }
-
-        public void goToBackground(){
-            if(player != null){
-                isPlayerPlaying = player.getPlayWhenReady();
-                player.setPlayWhenReady(false);
-            }
-        }
-
-        public void goToForeground(){
-            if(player != null){
-                player.setPlayWhenReady(isPlayerPlaying);
-            }
         }
     }
+
+
+
 
 }
