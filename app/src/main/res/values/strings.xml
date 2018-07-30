@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Baking Time</string>
+    <string name="btn_ingredient_label">Ingredients</string>
+    <string name="exoplayer_codelab">exoplayer_codelab</string>
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+</resources>
