@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import com.example.sang.bakingapp.R;
@@ -39,10 +40,15 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         ButterKnife.bind( this );
 
-        numberOfColumns = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 5 : 1;
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitle(getTitle());
+
+
+        numberOfColumns = getResources().getConfiguration().orientation
+                == Configuration.ORIENTATION_LANDSCAPE ? 5 : 2;
 
         GridLayoutManager layoutManager = new GridLayoutManager(this , numberOfColumns);
         rvBakingList.setLayoutManager(layoutManager);
