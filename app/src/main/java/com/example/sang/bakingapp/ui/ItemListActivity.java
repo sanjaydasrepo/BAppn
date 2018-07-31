@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -22,9 +23,11 @@ import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Recipe;
 import com.example.sang.bakingapp.modal.Steps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * An activity representing a list of Items. This activity
@@ -44,12 +47,14 @@ public class ItemListActivity extends AppCompatActivity {
     private Recipe recipe;
     private static final String RECIPE_KEY = "recipe_key";
     private static final String RECIPE_STEPS_KEY = "recipe_steps_key";
+    private static final String INGREDIENTS_KEY = "ingredients_key";
 
-    @BindView(R.id.btn_ingredients)
-    Button btnIngredients;
 
     @BindView(R.id.item_list)
     RecyclerView recyclerView;
+
+    @BindView(R.id.btn_ingredient)
+    Button btnIngredients;
 
 
 
@@ -57,14 +62,13 @@ public class ItemListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
+        ButterKnife.bind( this );
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+      //  toolbar.setTitle(getTitle());
         Intent intent = getIntent();
         recipe = intent.getParcelableExtra( RECIPE_KEY );
-
-
 
         if (findViewById(R.id.item_detail_container) != null) {
             mTwoPane = true;
@@ -77,7 +81,9 @@ public class ItemListActivity extends AppCompatActivity {
         btnIngredients.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                Intent intent = new Intent(getApplicationContext(), IngredientActivity.class);
+                intent.putParcelableArrayListExtra(INGREDIENTS_KEY , (ArrayList<? extends Parcelable>) recipe.getIngredients());
+                getApplicationContext().startActivity( intent );
             }
         });
     }
@@ -116,6 +122,8 @@ public class ItemListActivity extends AppCompatActivity {
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.item_detail_container, fragment)
                             .commit();
+
+
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
@@ -149,13 +157,16 @@ public class ItemListActivity extends AppCompatActivity {
         }
 
         class ViewHolder extends RecyclerView.ViewHolder{
-            final TextView mIdView;
-            final TextView mContentView;
+
+            @BindView(R.id.id_text)
+             TextView mIdView;
+
+            @BindView(R.id.content)
+             TextView mContentView;
 
             ViewHolder(View view) {
                 super(view);
-                mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                ButterKnife.bind(this , view);
             }
 
         }

@@ -64,7 +64,7 @@ public class ItemDetailFragment extends Fragment {
 
         if( currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
             layout =  R.layout.fragment_media_and_recipe_description_horizontal;
-            getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
+           // getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
             getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN ,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }
@@ -151,7 +151,7 @@ public class ItemDetailFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     destroyVideo = false;
-                    getActivity().finish();
+                    
 
              }
             });
