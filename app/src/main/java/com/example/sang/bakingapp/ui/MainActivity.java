@@ -12,6 +12,7 @@ import android.util.Log;
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.data.RequestInterface;
 import com.example.sang.bakingapp.modal.Recipe;
+import com.example.sang.bakingapp.utils.BakingUtils;
 
 import java.util.ArrayList;
 
@@ -47,8 +48,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
         toolbar.setTitle(getTitle());
 
 
-        numberOfColumns = getResources().getConfiguration().orientation
-                == Configuration.ORIENTATION_LANDSCAPE ? 5 : 2;
+        numberOfColumns = BakingUtils.calculateNoOfColumns( this );
 
         GridLayoutManager layoutManager = new GridLayoutManager(this , numberOfColumns);
         rvBakingList.setLayoutManager(layoutManager);

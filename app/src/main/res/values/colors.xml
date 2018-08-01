@@ -4,10 +4,10 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="recipe_card_text">#817b7b</color>
-    <color name="recipe_card">#d1cfcf</color>
+    <color name="recipe_card_text">#e4fde1</color>
+    <color name="recipe_card">#f45b69</color>
 
-    <color name="windowBackground">#FFFFFF</color>
+    <color name="windowBackground">#e4fde1</color>
     <color name="navigationBarColor">#000000</color>
 
 </resources>
