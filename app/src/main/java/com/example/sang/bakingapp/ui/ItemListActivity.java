@@ -56,6 +56,9 @@ public class ItemListActivity extends AppCompatActivity {
     @BindView(R.id.btn_ingredient)
     Button btnIngredients;
 
+    @BindView(R.id.tv_recipe_name)
+    TextView tvRecipeName;
+
 
 
     @Override
@@ -77,6 +80,7 @@ public class ItemListActivity extends AppCompatActivity {
 
         assert recyclerView != null;
         setupRecyclerView( recyclerView );
+        setupDataView();
 
         btnIngredients.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,8 +92,9 @@ public class ItemListActivity extends AppCompatActivity {
         });
     }
 
-
-
+    private void setupDataView() {
+        tvRecipeName.setText( recipe.getName() );
+    }
 
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -153,7 +158,10 @@ public class ItemListActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            if ( mValues != null)
+                return mValues.size();
+
+            return 0 ;
         }
 
         class ViewHolder extends RecyclerView.ViewHolder{

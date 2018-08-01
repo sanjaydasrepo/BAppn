@@ -6,15 +6,61 @@
     android:layout_height="match_parent"
     tools:context="com.example.sang.bakingapp.ui.IngredientActivity">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+         tools:ignore="MissingConstraints">
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/list_header"
+        android:gravity="center_vertical"
+        android:background="@color/ColorIngredientListHeader">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="@string/label_ingredient"
+            android:textColor="@color/ColorIngredientListHeaderText"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="@string/label_measure"
+            android:textColor="@color/ColorIngredientListHeaderText"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:textAppearance="?attr/textAppearanceListItem"
+            android:text="@string/label_quantity"
+            android:textColor="@color/ColorIngredientListHeaderText"
+            android:textAlignment="center"/>
+    </LinearLayout>
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/ingredient_item_list"
-        android:layout_width="@dimen/item_width"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:context="com.example.sang.bakingapp.ui.ItemListActivity"
-        tools:listitem="@layout/item_list_content" />
+        android:layout_below="@+id/list_header"/>
 
 </RelativeLayout>

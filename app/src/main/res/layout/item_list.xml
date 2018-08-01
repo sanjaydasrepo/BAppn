@@ -5,22 +5,73 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/ColorIngredientListHeader">
 
-<Button
+    <TextView
+        android:id="@+id/tv_recipe_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Nutrella Pie"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1"
+        android:textColor="@color/colorAccent" />
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/btn_ingredient_label"
-    android:id="@+id/btn_ingredient"/>
+    android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/icon_comment"
+        android:paddingLeft="10dp"
+        android:paddingTop="20dp"
+        android:text="Steps"
+        android:textColor="@color/colorAccent"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btn_ingredient"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_weight="3"
+        android:background="@drawable/shape"
+        android:padding="8dp"
+        android:text="@string/btn_ingredient_label"
+        android:textColor="@color/colorPrimary" />
+</LinearLayout>
 
 <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_list"
-    android:layout_width="@dimen/item_width"
-    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:layout_weight="1"
     app:layoutManager="android.support.v7.widget.LinearLayoutManager"
     tools:context="com.example.sang.bakingapp.ui.ItemListActivity"
     tools:listitem="@layout/item_list_content" />
+
+    <Button
+        android:id="@+id/btn_nav_back"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="5dp"
+        android:text="Back">
+
+    </Button>
+
 </LinearLayout>

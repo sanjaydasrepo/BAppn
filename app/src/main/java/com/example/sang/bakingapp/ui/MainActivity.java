@@ -1,13 +1,18 @@
 package com.example.sang.bakingapp.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.data.RequestInterface;
@@ -34,6 +39,10 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
 
     @BindView( R.id.rv_baking_list)
     RecyclerView rvBakingList;
+
+    @BindView( R.id.tv_error_message_display )
+    TextView mErrorMessageDisplay;
+
     private RecipeAdapter mRecipeAdapter;
 
 
@@ -55,10 +64,44 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
 
         mRecipeAdapter = new RecipeAdapter( this );
         rvBakingList.setAdapter( mRecipeAdapter );
-        loadJson();
+
+        if( isOnline() ) {
+
+            loadJson();
+        }else{
+            showErrorMessage( R.string.network_error );
+        }
+
+
 
 
     }
+
+    private void showErrorMessage(int stringIndex) {
+        /* First, hide the currently visible data */
+        rvBakingList.setVisibility(View.INVISIBLE);
+        /* Then, show the error */
+        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mErrorMessageDisplay.setText(getString(stringIndex));
+    }
+
+    private void showDataView() {
+
+        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        rvBakingList.setVisibility(View.VISIBLE);
+    }
+
+
+    private boolean isOnline(){
+        NetworkInfo netInfo=null;
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if(cm != null)
+            netInfo = cm.getActiveNetworkInfo();
+
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
 
     public void loadJson() {
         Retrofit retrofit = new Retrofit.Builder()
@@ -75,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
                 ArrayList<Recipe> jsonResponse = response.body();
 
                 if (jsonResponse != null ) {
-
+                    showDataView();
                     mRecipeAdapter.setData( jsonResponse );
                 }
             }

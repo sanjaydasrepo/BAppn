@@ -6,4 +6,12 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="appwidget_text">Bake</string>
     <string name="add_widget">Add widget</string>
+
+    <!--Network connection error-->
+    <string name="network_error">Please check your internet connection !</string>
+    <string name="label_ingredient">Ingredient</string>
+    <string name="label_measure">Measure</string>
+    <string name="label_quantity">Quantity</string>
+
+
 </resources>

@@ -2,12 +2,21 @@
 <resources>
     <color name="colorPrimary">#3f51b5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#fafafa</color>
 
     <color name="recipe_card_text">#e4fde1</color>
     <color name="recipe_card">#f45b69</color>
 
     <color name="windowBackground">#e4fde1</color>
     <color name="navigationBarColor">#000000</color>
+
+    <color name="ColorListItemText">#ffffff</color>
+
+    <color name="ColorIngredientListHeader">#f45b69</color>
+    <color name="ColorIngredientListHeaderText">#ffffff</color>
+    <color name="ColorIngredientItem">#eef2f2</color>
+    <color name="ColorIngredientItemText">#f45b69</color>
+
+    <color name="ColorItemListBackground">#ccc1c1</color>
 
 </resources>
