@@ -1,6 +1,7 @@
 package com.example.sang.bakingapp.ui;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -39,7 +40,17 @@ public class ItemDetailActivity extends AppCompatActivity {
             arguments.putParcelable(ItemDetailFragment.RECIPE_STEPS_KEY,
                     getIntent().getParcelableExtra(ItemDetailFragment.RECIPE_STEPS_KEY));
 
+
+            int orientation = getResources().getConfiguration().orientation;
+
+            if( orientation == Configuration.ORIENTATION_PORTRAIT ){
+                arguments.putString( ItemListActivity.SCREEN_TYPE , ItemListActivity.TYPE_TWO_PANE);
+            }else{
+                arguments.putString( ItemListActivity.SCREEN_TYPE , ItemListActivity.TYPE_SINGLE);
+            }
+
             ItemDetailFragment fragment = new ItemDetailFragment();
+
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)

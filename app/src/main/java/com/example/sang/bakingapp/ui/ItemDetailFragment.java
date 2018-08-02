@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -20,6 +21,8 @@ import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.util.Util;
+
+import java.time.LocalDate;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,34 +51,53 @@ public class ItemDetailFragment extends Fragment {
     @BindView(R.id.exo_fullscreen_icon)
     ImageView fullscreenIcon;
 
+    @BindView( R.id.tv_no_view_error)
+    TextView tvErrorMsg;
+
     private boolean destroyVideo = true;
 
     public ItemDetailFragment() {}
 
     int layout = R.layout.fragment_media_and_recipe_description;
-    int currentOrientation;
+    String screenType;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
 
-        currentOrientation = getResources().getConfiguration().orientation;
 
-        if( currentOrientation == Configuration.ORIENTATION_LANDSCAPE){
-            layout =  R.layout.fragment_media_and_recipe_description_horizontal;
-           // getActivity().requestWindowFeature(Window.FEATURE_NO_TITLE);
-            getActivity().getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN ,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }
+//        if ( savedInstanceState != null && savedInstanceState.containsKey( RECIPE_STEPS_KEY) &&
+//                savedInstanceState.containsKey( ItemListActivity.SCREEN_TYPE)){
+//            mItem = savedInstanceState.getParcelable( RECIPE_STEPS_KEY );
+//            screenType = savedInstanceState.getString( ItemListActivity.SCREEN_TYPE );
+//        }
 
-
-        if (getArguments().containsKey(RECIPE_STEPS_KEY)) {
+        if (getArguments().containsKey(RECIPE_STEPS_KEY) && getArguments().containsKey(ItemListActivity.SCREEN_TYPE)) {
 
             mItem = getArguments().getParcelable( RECIPE_STEPS_KEY );
+            screenType = getArguments().getString( ItemListActivity.SCREEN_TYPE );
+
+            Log.d("Screentype " ,screenType);
         }
+
+        if( screenType.equals( ItemListActivity.TYPE_TWO_PANE )){
+            layout =  R.layout.fragment_media_and_recipe_description_horizontal;
+        }else {
+            layout = R.layout.fragment_media_and_recipe_description;
+        }
+
+
+
     }
 
+//    @Override
+//    public void onSaveInstanceState(@NonNull Bundle outState) {
+//        super.onSaveInstanceState(outState);
+//        outState.putParcelable( RECIPE_STEPS_KEY , mItem);
+//        outState.putString( ItemListActivity.SCREEN_TYPE , screenType);
+//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,20 +108,15 @@ public class ItemDetailFragment extends Fragment {
         if (mItem != null ) {
             previewUrl = mItem.getVideoURL();
 
-            if( currentOrientation == Configuration.ORIENTATION_PORTRAIT){
+            if( screenType.equals( ItemListActivity.TYPE_TWO_PANE )){
                 textView.setText( mItem.getShortDescription() );
             }
+
         }
 
          return view;
     }
-    @Override
-    public void onStart() {
-        super.onStart();
 
-            //initializePlayer();
-
-    }
 
     @Override
     public void onResume() {
@@ -141,7 +158,7 @@ public class ItemDetailFragment extends Fragment {
     private void initializePlayer() {
 
 
-        if ( previewUrl != null && playerView !=null ) {
+        if ( previewUrl != null && playerView !=null && !previewUrl.isEmpty()) {
 
             Uri uri = Uri.parse(previewUrl);
             ExoPlayerVideoHandler.getInstance().prepareExoPlayerForUri( context , uri , playerView);
@@ -157,9 +174,15 @@ public class ItemDetailFragment extends Fragment {
             });
 
         }
+        else{
+            showErrorMsg();
+        }
     }
 
-
+    private void showErrorMsg() {
+        tvErrorMsg.setVisibility(View.VISIBLE);
+        playerView.setVisibility(View.GONE);
+    }
 
 
 }

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -48,6 +49,11 @@ public class ItemListActivity extends AppCompatActivity {
     private static final String RECIPE_KEY = "recipe_key";
     private static final String RECIPE_STEPS_KEY = "recipe_steps_key";
     private static final String INGREDIENTS_KEY = "ingredients_key";
+    private static final String RECIPE_NAME_KEY = "recipe_name_key";
+    public static final String SCREEN_TYPE = "screenType";
+    public static final String TYPE_SINGLE = "single";
+    public static final String TYPE_TWO_PANE = "two_pane";
+
 
 
     @BindView(R.id.item_list)
@@ -56,9 +62,8 @@ public class ItemListActivity extends AppCompatActivity {
     @BindView(R.id.btn_ingredient)
     Button btnIngredients;
 
-    @BindView(R.id.tv_recipe_name)
+    @BindView(R.id.tv_list_recipe_name)
     TextView tvRecipeName;
-
 
 
     @Override
@@ -66,12 +71,10 @@ public class ItemListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_list);
         ButterKnife.bind( this );
-
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-      //  toolbar.setTitle(getTitle());
         Intent intent = getIntent();
-        recipe = intent.getParcelableExtra( RECIPE_KEY );
+
+        recipe = intent.getParcelableExtra(RECIPE_KEY);
+
 
         if (findViewById(R.id.item_detail_container) != null) {
             mTwoPane = true;
@@ -80,7 +83,7 @@ public class ItemListActivity extends AppCompatActivity {
 
         assert recyclerView != null;
         setupRecyclerView( recyclerView );
-        setupDataView();
+        setupDataView( );
 
         btnIngredients.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +94,14 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putString( RECIPE_NAME_KEY , recipe.getName());
+
+    }
+
 
     private void setupDataView() {
         tvRecipeName.setText( recipe.getName() );
@@ -122,6 +133,8 @@ public class ItemListActivity extends AppCompatActivity {
 
                 if (mTwoPane) {
                     arguments.putParcelable(RECIPE_STEPS_KEY ,steps );
+                    arguments.putString( SCREEN_TYPE , TYPE_TWO_PANE);
+
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()

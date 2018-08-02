@@ -4,28 +4,38 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:layout_marginTop="5dp"
+    android:padding="8dp"
     android:background="@drawable/shape"
     >
 
 
     <TextView
         android:id="@+id/id_text"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_gravity="center_vertical|fill_horizontal"
-        android:background="@drawable/item_no_circle"
-        android:gravity="center_vertical|center_horizontal"
-        android:textAlignment="gravity"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:paddingTop="3dp"
+        android:textSize="24dp"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:textAlignment="center"
+        android:text="1"
+        android:textColor="@color/colorPrimaryDark"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:src="@drawable/item_vertical_icon"
+        android:layout_gravity="center_vertical|center_horizontal"/>
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:textColor="@color/colorPrimary"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:text="Android"
+        android:textAppearance="?attr/titleTextStyle"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="24sp" />
 
 </LinearLayout>

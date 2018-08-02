@@ -43,7 +43,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeList
 
     @Override
     public void onBindViewHolder(@NonNull RecipeListViewHolder holder, int position) {
-        holder.ivPoster.setText( recipeList.get(position).getName() );
+        holder.tvRecipeName.setText( recipeList.get(position).getName() );
     }
 
     @Override
@@ -66,7 +66,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeList
     class RecipeListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         @BindView(R.id.tv_recipe_name)
-        TextView ivPoster;
+        TextView tvRecipeName;
 
 
         public RecipeListViewHolder(View itemView) {

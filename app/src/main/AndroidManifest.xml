@@ -22,7 +22,7 @@
         <activity
             android:name=".ui.ItemListActivity"
             android:label="@string/title_item_list"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".ui.ItemDetailActivity"
             android:label="@string/title_item_detail"
