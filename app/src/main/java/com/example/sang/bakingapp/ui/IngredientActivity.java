@@ -3,17 +3,20 @@ package com.example.sang.bakingapp.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Ingredients;
 import com.example.sang.bakingapp.modal.Steps;
+import com.example.sang.bakingapp.utils.BakingUtils;
 
 import java.util.List;
 
@@ -24,6 +27,11 @@ public class IngredientActivity extends AppCompatActivity {
 
     @BindView(R.id.ingredient_item_list)
     RecyclerView recyclerView;
+
+    @Nullable
+    @BindView(R.id.btn_nav_back)
+    Button btnNavBack;
+
 
     private List<Ingredients> ingredientsList;
     private static final String INGREDIENTS_KEY = "ingredients_key";
@@ -38,6 +46,16 @@ public class IngredientActivity extends AppCompatActivity {
         ingredientsList = intent.getParcelableArrayListExtra( INGREDIENTS_KEY );
 
         setupRecyclerView( recyclerView );
+
+        if( btnNavBack != null ){
+            btnNavBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    IngredientActivity.super.onBackPressed();
+                }
+            });
+        }
+
 
     }
 
@@ -66,7 +84,7 @@ public class IngredientActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(final IngredientActivity.SimpleItemRecyclerViewAdapter.ViewHolder holder, int position) {
-           holder.mTvIngredient.setText( mValues.get( position ).getIngredient() );
+           holder.mTvIngredient.setText(BakingUtils.toTitleCase(mValues.get( position ).getIngredient() ));
            holder.mMeasure.setText( mValues.get(position).getMeasure() );
            holder.mQuantity.setText( mValues.get(position).getQuantity() );
         }

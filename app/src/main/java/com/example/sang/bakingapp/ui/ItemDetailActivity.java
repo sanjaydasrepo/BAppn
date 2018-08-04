@@ -28,15 +28,11 @@ public class ItemDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
 
- // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putParcelable(ItemDetailFragment.RECIPE_STEPS_KEY,
                     getIntent().getParcelableExtra(ItemDetailFragment.RECIPE_STEPS_KEY));

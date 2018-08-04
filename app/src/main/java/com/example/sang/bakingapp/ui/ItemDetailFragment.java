@@ -1,37 +1,33 @@
 package com.example.sang.bakingapp.ui;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
-import com.google.android.exoplayer2.ui.PlaybackControlView;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.util.Util;
 
-import java.time.LocalDate;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Optional;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -63,6 +59,7 @@ public class ItemDetailFragment extends Fragment {
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen;
     private FrameLayout fullscreenButton;
+    private SimpleExoPlayer player;
 
     public ItemDetailFragment() {}
 
@@ -103,26 +100,34 @@ public class ItemDetailFragment extends Fragment {
             if( screenType.equals( ItemListActivity.TYPE_PORTRAIT )){
                 textView.setText( mItem.getShortDescription() );
             }
-
-        }
+         }
 
          return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer();
+        }
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-
+        hideSystemUi();
+        if ((Util.SDK_INT <= 23 || player == null)) {
             initializePlayer();
-
-
+        }
     }
+
     @Override
     public void onPause() {
         super.onPause();
-        ExoPlayerVideoHandler.getInstance().goToBackground();
-
+        if (Util.SDK_INT <= 23) {
+            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        }
     }
 
     @Override
@@ -134,8 +139,9 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-
+        if (Util.SDK_INT > 23) {
             ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+        }
     }
 
     @Override
@@ -146,12 +152,27 @@ public class ItemDetailFragment extends Fragment {
         }
     }
 
+    @SuppressLint("InlinedApi")
+    private void hideSystemUi() {
+        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+    }
+
 
     private void initializePlayer() {
         if ( previewUrl != null && playerView !=null && !previewUrl.isEmpty()) {
 
             Uri uri = Uri.parse(previewUrl);
-            ExoPlayerVideoHandler.getInstance().prepareExoPlayerForUri( context , uri , playerView);
+
+            player = ExoPlayerFactory.newSimpleInstance(
+                    new DefaultRenderersFactory(context),
+                    new DefaultTrackSelector(), new DefaultLoadControl());
+
+            ExoPlayerVideoHandler.getInstance().prepareExoPlayerForUri( context , uri , playerView ,player);
             ExoPlayerVideoHandler.getInstance().goToForeground();
 
             initFullscreenDialog();

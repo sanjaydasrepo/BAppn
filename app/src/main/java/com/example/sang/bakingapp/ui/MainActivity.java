@@ -52,9 +52,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
         setContentView(R.layout.activity_main);
         ButterKnife.bind( this );
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.setTitle(getTitle());
 
 
         numberOfColumns = BakingUtils.calculateNoOfColumns( this );
@@ -132,7 +129,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
 
     @Override
     public void onRecipeClick(Recipe recipe) {
-        Log.d("Click  " ,recipe.getName());
         Intent intent = new Intent( this , ItemListActivity.class);
         intent.putExtra( RECIPE_KEY , recipe );
         startActivity( intent );

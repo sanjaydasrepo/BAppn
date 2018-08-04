@@ -2,25 +2,20 @@ package com.example.sang.bakingapp.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
-
 import com.example.sang.bakingapp.modal.Recipe;
 import com.example.sang.bakingapp.modal.Steps;
 
@@ -65,6 +60,9 @@ public class ItemListActivity extends AppCompatActivity {
     @BindView(R.id.tv_list_recipe_name)
     TextView tvRecipeName;
 
+    @Nullable @BindView(R.id.btn_nav_back)
+    Button btnNavBack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,9 +88,19 @@ public class ItemListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), IngredientActivity.class);
                 intent.putParcelableArrayListExtra(INGREDIENTS_KEY , (ArrayList<? extends Parcelable>) recipe.getIngredients());
-                getApplicationContext().startActivity( intent );
+                v.getContext().startActivity( intent );
             }
         });
+
+        if( btnNavBack != null ){
+            btnNavBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ItemListActivity.super.onBackPressed();
+                }
+            });
+        }
+
     }
 
     @Override

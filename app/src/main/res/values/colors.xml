@@ -19,4 +19,6 @@
 
     <color name="ColorItemListBackground">#ccc1c1</color>
 
+    <color name="CommonBg">#fafafa</color>
+
 </resources>

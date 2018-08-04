@@ -19,8 +19,9 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
  */
 
 public class ExoPlayerVideoHandler {
-    private SimpleExoPlayer player;
+
     private boolean playWhenReady;
+    SimpleExoPlayer player;
 
 
     private static ExoPlayerVideoHandler instance;
@@ -38,19 +39,13 @@ public class ExoPlayerVideoHandler {
     private ExoPlayerVideoHandler(){}
 
     public void prepareExoPlayerForUri(Context context, Uri uri,
-                                       PlayerView playerView){
+                                       PlayerView playerView ,SimpleExoPlayer player){
         if(context != null && uri != null && playerView != null){
 
                 // Create a new player if the player is null or
                 // we want to play a new video
+                this.player = player ;
                 playerUri = uri;
-
-                player = ExoPlayerFactory.newSimpleInstance(
-                        new DefaultRenderersFactory(context),
-                        new DefaultTrackSelector(), new DefaultLoadControl());
-
-
-
                 playerView.setPlayer(player);
 
                 playerView.setControllerHideOnTouch(false);
@@ -94,7 +89,7 @@ public class ExoPlayerVideoHandler {
     }
     private static MediaSource buildMediaSource(Uri uri) {
         return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory("exoplayer-codelab")).
+                new DefaultHttpDataSourceFactory("exoplayer-mplayer")).
                 createMediaSource(uri);
     }
 
