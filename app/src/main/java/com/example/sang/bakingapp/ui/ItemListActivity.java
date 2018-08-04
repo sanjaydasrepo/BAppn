@@ -51,8 +51,8 @@ public class ItemListActivity extends AppCompatActivity {
     private static final String INGREDIENTS_KEY = "ingredients_key";
     private static final String RECIPE_NAME_KEY = "recipe_name_key";
     public static final String SCREEN_TYPE = "screenType";
-    public static final String TYPE_SINGLE = "single";
-    public static final String TYPE_TWO_PANE = "two_pane";
+    public static final String TYPE_PORTRAIT = "portrait";
+    public static final String TYPE_HORIZONTAL = "horizontal";
 
 
 
@@ -133,10 +133,10 @@ public class ItemListActivity extends AppCompatActivity {
 
                 if (mTwoPane) {
                     arguments.putParcelable(RECIPE_STEPS_KEY ,steps );
-                    arguments.putString( SCREEN_TYPE , TYPE_TWO_PANE);
+                    arguments.putString( SCREEN_TYPE , TYPE_PORTRAIT);
 
                     ItemDetailFragment fragment = new ItemDetailFragment();
-                    fragment.setArguments(arguments);
+                    fragment.setArguments( arguments );
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.item_detail_container, fragment)
                             .commit();
