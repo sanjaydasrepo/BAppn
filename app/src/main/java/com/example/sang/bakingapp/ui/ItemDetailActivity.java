@@ -54,9 +54,13 @@ public class ItemDetailActivity extends AppCompatActivity {
             if( orientation == Configuration.ORIENTATION_PORTRAIT ){
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_PORTRAIT);
+
+                btnNavBack.setVisibility(View.VISIBLE);
             }else{
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_HORIZONTAL);
+
+                btnNavBack.setVisibility(View.GONE);
             }
 
 

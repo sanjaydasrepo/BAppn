@@ -10,12 +10,23 @@
     <TextView
         android:id="@+id/tv_ingredient"
         android:layout_width="0dp"
-        android:layout_weight="1"
+        android:layout_weight="1.6"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textSize="@dimen/custom_list_item_text_size"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimary"
+        android:gravity="start" />
+    <TextView
+        android:id="@+id/tv_quantity"
+        android:layout_width="0dp"
+        android:layout_weight="0.6"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textSize="@dimen/custom_list_item_text_size"
+        android:textAlignment="textEnd"
+        android:textColor="@color/colorPrimary"
+        android:gravity="end" />
     <TextView
         android:id="@+id/tv_measure"
         android:layout_width="0dp"
@@ -23,17 +34,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
         android:textSize="@dimen/custom_list_item_text_size"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimary"
+        android:gravity="start" />
 
-    <TextView
-        android:id="@+id/tv_quantity"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:textSize="@dimen/custom_list_item_text_size"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimary"/>
+
 
 </LinearLayout>

@@ -9,11 +9,12 @@
 
     <!--Network connection error-->
     <string name="network_error">Please check your internet connection !</string>
-    <string name="label_ingredient">Ingredient</string>
+    <string name="label_ingredient">Ingredients</string>
     <string name="label_measure">Measure</string>
     <string name="label_quantity">Quantity</string>
     <string name="video_not_available">Video not available</string>
     <string name="steps">Steps</string>
+    <string name="back">Back</string>
 
 
 </resources>

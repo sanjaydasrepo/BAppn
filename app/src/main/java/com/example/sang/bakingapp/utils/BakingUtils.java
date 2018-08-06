@@ -1,6 +1,8 @@
 package com.example.sang.bakingapp.utils;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 
 public class BakingUtils {
@@ -37,4 +39,14 @@ public class BakingUtils {
 
         return builder.toString();
     }
+    public static boolean isOnline( Context context){
+        NetworkInfo netInfo=null;
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if(cm != null)
+            netInfo = cm.getActiveNetworkInfo();
+
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
 }

@@ -27,9 +27,10 @@
             <TextView
                 android:id="@+id/tv_no_view_error"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="150dp"
                 android:layout_gravity="center_vertical|center_horizontal"
                 android:paddingLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/video_not_available"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
                 android:visibility="invisible" />
@@ -42,7 +43,7 @@
             android:layout_height="0dp"
             android:layout_weight="0.5"
             android:padding="15dp"
-            android:text="TextView"
+            android:text=""
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Display1" />
 
 

@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
         mRecipeAdapter = new RecipeAdapter( this );
         rvBakingList.setAdapter( mRecipeAdapter );
 
-        if( isOnline() ) {
+        if( BakingUtils.isOnline( this ) ) {
 
             loadJson();
         }else{
@@ -89,15 +89,6 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
     }
 
 
-    private boolean isOnline(){
-        NetworkInfo netInfo=null;
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if(cm != null)
-            netInfo = cm.getActiveNetworkInfo();
-
-        return netInfo != null && netInfo.isConnectedOrConnecting();
-    }
 
 
     public void loadJson() {

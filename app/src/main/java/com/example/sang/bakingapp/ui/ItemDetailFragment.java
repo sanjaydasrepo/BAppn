@@ -15,9 +15,11 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
+import com.example.sang.bakingapp.utils.BakingUtils;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -171,7 +173,11 @@ public class ItemDetailFragment extends Fragment {
 
     private void initializePlayer() {
 
-
+       if( !BakingUtils.isOnline( context )){
+           Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)
+                   .show();
+           return;
+       }
 
         if ( previewUrl != null && playerView !=null && !previewUrl.isEmpty()) {
 
