@@ -3,6 +3,7 @@ package com.example.sang.bakingapp.ui;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
@@ -12,8 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
+import android.widget.Button;
 
 import com.example.sang.bakingapp.R;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -23,10 +28,16 @@ import com.example.sang.bakingapp.R;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    @Nullable
+    @BindView(R.id.btn_nav_back)
+    Button btnNavBack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_item_detail);
+        ButterKnife.bind( this );
+
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -48,12 +59,24 @@ public class ItemDetailActivity extends AppCompatActivity {
                         ItemListActivity.TYPE_HORIZONTAL);
             }
 
+
+        if( btnNavBack != null ) {
+            btnNavBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ItemDetailActivity.super.onBackPressed();
+                }
+            });
+        }
+
             ItemDetailFragment fragment = new ItemDetailFragment();
 
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.item_detail_container, fragment)
                     .commit();
+
+
 
     }
 

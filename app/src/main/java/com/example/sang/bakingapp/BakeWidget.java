@@ -23,7 +23,7 @@ public class BakeWidget extends AppWidgetProvider {
         Intent intent = new Intent( context , MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity( context , 0 , intent , 0);
 
-        views.setOnClickPendingIntent(R.id.iv_bake_widget , pendingIntent);
+        views.setOnClickPendingIntent(R.id.bakeWidget , pendingIntent);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
 

@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,6 +56,9 @@ public class ItemDetailFragment extends Fragment {
     @BindView( R.id.tv_no_view_error)
     TextView tvErrorMsg;
 
+
+
+
     private boolean destroyVideo = true;
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen;
@@ -73,7 +77,8 @@ public class ItemDetailFragment extends Fragment {
         context = getContext();
 
 
-        if (getArguments().containsKey(RECIPE_STEPS_KEY) && getArguments().containsKey(ItemListActivity.SCREEN_TYPE)) {
+        if (getArguments().containsKey(RECIPE_STEPS_KEY)
+                && getArguments().containsKey(ItemListActivity.SCREEN_TYPE)) {
 
             mItem = getArguments().getParcelable( RECIPE_STEPS_KEY );
             screenType = getArguments().getString( ItemListActivity.SCREEN_TYPE );
@@ -85,6 +90,7 @@ public class ItemDetailFragment extends Fragment {
         }else {
             layout = R.layout.fragment_media_and_recipe_description_horizontal;
         }
+
     }
 
 
@@ -164,6 +170,9 @@ public class ItemDetailFragment extends Fragment {
 
 
     private void initializePlayer() {
+
+
+
         if ( previewUrl != null && playerView !=null && !previewUrl.isEmpty()) {
 
             Uri uri = Uri.parse(previewUrl);

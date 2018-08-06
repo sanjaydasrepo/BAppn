@@ -2,13 +2,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/widget_margin">
-
+    android:padding="@dimen/widget_margin"
+    android:background="@color/colorPrimary">
 
     <ImageView
-        android:id="@+id/iv_bake_widget"
-        android:layout_width="match_parent"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/icon_cupcake"
+        android:id="@+id/bakeWidget"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        app:srcCompat="@drawable/play_button" />
+        android:text="@string/app_name"
+        android:textColor="@color/colorAccent"
+        android:layout_below="@+id/bakeWidget"
+        android:layout_centerHorizontal="true"
+        />
 </RelativeLayout>
