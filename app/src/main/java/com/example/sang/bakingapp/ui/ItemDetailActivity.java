@@ -3,6 +3,7 @@ package com.example.sang.bakingapp.ui;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -32,6 +33,12 @@ public class ItemDetailActivity extends AppCompatActivity {
     @BindView(R.id.btn_nav_back)
     Button btnNavBack;
 
+    ItemDetailFragment fragment;
+    private final String FRAGMENT_KEY = "my-fragment";
+
+    public static final String FULLSCREEN = "fullscreen";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,10 +46,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         ButterKnife.bind( this );
 
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
             Bundle arguments = new Bundle();
             arguments.putParcelable(ItemDetailFragment.RECIPE_STEPS_KEY,
@@ -73,16 +76,22 @@ public class ItemDetailActivity extends AppCompatActivity {
             });
         }
 
-            ItemDetailFragment fragment = new ItemDetailFragment();
 
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.item_detail_container, fragment)
-                    .commit();
+        if( orientation == Configuration.ORIENTATION_LANDSCAPE ){
+            arguments.putBoolean(FULLSCREEN , true);
+        }else{
+            arguments.putBoolean(FULLSCREEN , false);
+        }
 
+        fragment = new ItemDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.item_detail_container, fragment)
+                .commit();
 
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
