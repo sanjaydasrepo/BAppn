@@ -77,7 +77,6 @@ public class ItemDetailFragment extends Fragment {
 
     private String PLAYBACK_POSITION_KEY = "playbackPosition";
     private Uri uri;
-    private boolean isFullScreen = false;
 
 
     public ItemDetailFragment() {}
@@ -92,6 +91,7 @@ public class ItemDetailFragment extends Fragment {
         context = getContext();
 
 
+
         if (getArguments().containsKey(RECIPE_STEPS_KEY)
                 && getArguments().containsKey(ItemListActivity.SCREEN_TYPE) ) {
 
@@ -99,21 +99,18 @@ public class ItemDetailFragment extends Fragment {
             screenType = getArguments().getString( ItemListActivity.SCREEN_TYPE );
 
         }
-
-        if( getArguments().containsKey( ItemDetailActivity.FULLSCREEN )){
-            isFullScreen = getArguments().getBoolean( ItemDetailActivity.FULLSCREEN );
-        }
-
         if( screenType.equals( ItemListActivity.TYPE_PORTRAIT )){
             layout =  R.layout.fragment_media_and_recipe_description;
         }else {
             layout = R.layout.fragment_media_and_recipe_description_horizontal;
         }
 
-        if( isFullScreen ){
-          //  initFullscreenDialog();
-        }
 
+        if( savedInstanceState != null &&
+                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )){
+                 playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
+
+        }
 
     }
 
@@ -139,20 +136,7 @@ public class ItemDetailFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putLong(PLAYBACK_POSITION_KEY , playbackPosition);
     }
-//
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
 
-       // playbackPosition = C.TIME_UNSET;
-        if( savedInstanceState != null &&
-                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )){
-                 playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
-
-                 Log.d("posff" , currentWindow+" - " + playbackPosition + " - " +" - " +playWhenReady);
-         }
-
-    }
 
     @Override
     public void onStart() {
@@ -179,7 +163,6 @@ public class ItemDetailFragment extends Fragment {
 
     private void initializePlayer() {
 
-        Log.d("posff" , currentWindow+" - " + playbackPosition + " - " +" - " +playWhenReady);
 
         if( !BakingUtils.isOnline( context )){
             Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)
@@ -201,17 +184,18 @@ public class ItemDetailFragment extends Fragment {
 
                 playerView.setPlayer(player);
                 player.setPlayWhenReady(playWhenReady);
-                //if ( playbackPosition != C.TIME_UNSET )
-                    player.seekTo( playbackPosition );
+
+                    player.seekTo( currentWindow , playbackPosition);
                 playerView.setControllerHideOnTouch(true);
 
         }
 
         MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, true, false);
+        player.prepare(mediaSource, false, true);
 
         initFullscreenDialog();
         initFullscreenButton();
+
 
     }
 
@@ -229,15 +213,7 @@ public class ItemDetailFragment extends Fragment {
                 createMediaSource(uri);
     }
 
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
+
     private void showErrorMsg() {
         tvErrorMsg.setVisibility(View.VISIBLE);
         playerView.setVisibility(View.GONE);

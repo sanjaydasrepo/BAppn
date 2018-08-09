@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.example.sang.bakingapp.R;
 
@@ -30,6 +31,9 @@ import butterknife.ButterKnife;
 public class ItemDetailActivity extends AppCompatActivity {
 
     @Nullable
+    @BindView(R.id.btn_layout)
+    LinearLayout btnLayout;
+
     @BindView(R.id.btn_nav_back)
     Button btnNavBack;
 
@@ -58,12 +62,12 @@ public class ItemDetailActivity extends AppCompatActivity {
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_PORTRAIT);
 
-                btnNavBack.setVisibility(View.VISIBLE);
+                btnLayout.setVisibility(View.VISIBLE);
             }else{
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_HORIZONTAL);
 
-                btnNavBack.setVisibility(View.GONE);
+                btnLayout.setVisibility(View.GONE);
             }
 
 
@@ -76,19 +80,18 @@ public class ItemDetailActivity extends AppCompatActivity {
             });
         }
 
-
-        if( orientation == Configuration.ORIENTATION_LANDSCAPE ){
-            arguments.putBoolean(FULLSCREEN , true);
-        }else{
-            arguments.putBoolean(FULLSCREEN , false);
-        }
+//
+//        if( orientation == Configuration.ORIENTATION_LANDSCAPE ){
+//            arguments.putBoolean(FULLSCREEN , true);
+//        }else{
+//            arguments.putBoolean(FULLSCREEN , false);
+//        }
 
         fragment = new ItemDetailFragment();
         fragment.setArguments(arguments);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.item_detail_container, fragment)
                 .commit();
-
 
     }
 
