@@ -18,7 +18,7 @@
             android:layout_weight="0.5"
             android:background="#fafafa">
 
-            <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+            <com.google.android.exoplayer2.ui.PlayerView
                 android:id="@+id/audio_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
