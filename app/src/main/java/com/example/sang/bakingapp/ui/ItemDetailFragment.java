@@ -4,10 +4,12 @@ import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +21,24 @@ import android.widget.Toast;
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
 import com.example.sang.bakingapp.utils.BakingUtils;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
@@ -66,6 +77,11 @@ public class ItemDetailFragment extends Fragment {
 
     private String PLAYBACK_POSITION_KEY = "playbackPosition";
     private Uri uri;
+    private BandwidthMeter bandwidthMeter;
+    private DefaultDataSourceFactory mediaDataSourceFactory;
+    private Timeline.Window window;
+    private DefaultTrackSelector trackSelector;
+    private Handler mainHandler;
 
 
     public ItemDetailFragment() {}
@@ -100,6 +116,9 @@ public class ItemDetailFragment extends Fragment {
                  playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
 
         }
+
+
+        bandwidthMeter = new DefaultBandwidthMeter();
 
     }
 
@@ -146,8 +165,18 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        if (Util.SDK_INT <= 23) {
             releasePlayer();
+        }
 
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
     }
 
     private void initializePlayer() {
@@ -164,24 +193,28 @@ public class ItemDetailFragment extends Fragment {
             return;
         }
 
+
         uri = Uri.parse( previewUrl );
 
         if (player == null) {
-                player = ExoPlayerFactory.newSimpleInstance(
-                        new DefaultRenderersFactory(context),
-                        new DefaultTrackSelector(), new DefaultLoadControl());
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+
+
+                player = ExoPlayerFactory.newSimpleInstance(context , trackSelector);
 
                 playerView.setPlayer(player);
                 player.setPlayWhenReady(playWhenReady);
 
-                    player.seekTo( currentWindow , playbackPosition);
-                playerView.setControllerHideOnTouch(true);
+            boolean haveStartPosition = currentWindow != C.INDEX_UNSET;
+                if( haveStartPosition ){
+                 player.seekTo( currentWindow , playbackPosition);
+                }
 
-        }
 
         MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, false, true);
-
+        player.prepare(mediaSource, !haveStartPosition, true);
+        }
         initFullscreenDialog();
         initFullscreenButton();
 
@@ -197,9 +230,15 @@ public class ItemDetailFragment extends Fragment {
     }
 
     private MediaSource buildMediaSource(Uri uri) {
-        return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory("exoplayer-mplayer")).
-                createMediaSource(uri);
+        DefaultBandwidthMeter bandwidthMeterA = new DefaultBandwidthMeter();
+
+        DefaultDataSourceFactory defaultDataSourceFactory =
+                new DefaultDataSourceFactory(context , "BakingApp" , bandwidthMeterA);
+
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
+         ExtractorMediaSource videoSource = new ExtractorMediaSource( uri , defaultDataSourceFactory , extractorsFactory ,null ,null);
+                return videoSource;
     }
 
 
