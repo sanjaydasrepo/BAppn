@@ -34,7 +34,18 @@
         </activity>
         <activity android:name=".ui.IngredientActivity" />
 
-        <receiver android:name=".BakeWidget"
+        <service android:name=".widget.WidgetUpdateService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="widgetupdateservice.update_app_widget"/>
+                <action android:name="widgetupdateservice.update_app_widget_list"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".widget.ListViewWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <receiver android:name=".widget.BakeWidgetProvider"
             android:icon="@drawable/icon_cupcake">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

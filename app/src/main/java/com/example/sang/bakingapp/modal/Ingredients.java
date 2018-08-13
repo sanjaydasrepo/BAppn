@@ -76,4 +76,7 @@ public class Ingredients implements Parcelable {
             return new Ingredients[size];
         }
     };
+
+    public Ingredients() {
+    }
 }

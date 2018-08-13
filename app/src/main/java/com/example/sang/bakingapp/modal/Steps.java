@@ -104,4 +104,7 @@ public class Steps implements Parcelable {
             return new Steps[size];
         }
     };
+
+    public Steps() {
+    }
 }

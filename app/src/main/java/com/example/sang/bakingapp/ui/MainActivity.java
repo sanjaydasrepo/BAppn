@@ -1,24 +1,21 @@
 package com.example.sang.bakingapp.ui;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.data.RequestInterface;
+import com.example.sang.bakingapp.data.WidgetDataModel;
 import com.example.sang.bakingapp.modal.Recipe;
 import com.example.sang.bakingapp.utils.BakingUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -122,6 +119,12 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
     public void onRecipeClick(Recipe recipe) {
         Intent intent = new Intent( this , ItemListActivity.class);
         intent.putExtra( RECIPE_KEY , recipe );
+        try {
+            WidgetDataModel.createDataForWidget( this , recipe);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         startActivity( intent );
     }
 }

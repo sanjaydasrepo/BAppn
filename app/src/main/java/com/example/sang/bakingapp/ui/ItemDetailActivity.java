@@ -32,10 +32,6 @@ public class ItemDetailActivity extends AppCompatActivity {
     Button btnNavBack;
 
     ItemDetailFragment fragment;
-    private final String FRAGMENT_KEY = "my-fragment";
-
-    public static final String FULLSCREEN = "fullscreen";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +42,10 @@ public class ItemDetailActivity extends AppCompatActivity {
 
 
             Bundle arguments = new Bundle();
+
             arguments.putParcelable(ItemDetailFragment.RECIPE_STEPS_KEY,
                     getIntent().getParcelableExtra(ItemDetailFragment.RECIPE_STEPS_KEY));
+
 
 
             int orientation = getResources().getConfiguration().orientation;

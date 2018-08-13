@@ -48,7 +48,7 @@ public class ItemListActivity extends AppCompatActivity {
     public static final String SCREEN_TYPE = "screenType";
     public static final String TYPE_PORTRAIT = "portrait";
     public static final String TYPE_HORIZONTAL = "horizontal";
-
+    private static final String FROM_TITLE_TEXT = "title-text";
 
 
     @BindView(R.id.item_list)
@@ -72,6 +72,12 @@ public class ItemListActivity extends AppCompatActivity {
         Intent intent = getIntent();
 
         recipe = intent.getParcelableExtra(RECIPE_KEY);
+
+
+        if(  intent.hasExtra(FROM_TITLE_TEXT)){
+            recipe = intent.getParcelableExtra( FROM_TITLE_TEXT );
+        }
+
 
 
         if (findViewById(R.id.item_detail_container) != null) {

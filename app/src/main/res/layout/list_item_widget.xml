@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#fff"
+    android:layout_marginTop="5dp"
+    android:id="@+id/parentView">
+
+
+    <TextView
+        android:id="@+id/tv_ingredient"
+        android:layout_width="0dp"
+        android:layout_weight="1.6"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textSize="@dimen/widget_item_text_size"
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimary"
+        android:gravity="start" />
+
+    <TextView
+        android:id="@+id/tv_quantity"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:layout_weight="0.6"
+        android:gravity="end"
+        android:textAlignment="textEnd"
+        android:textColor="@color/colorPrimary"
+        android:textSize="@dimen/widget_item_text_size" />
+    <TextView
+        android:id="@+id/tv_measure"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"
+        android:textSize="@dimen/widget_item_text_size"
+        android:textAlignment="textStart"
+        android:textColor="@color/colorPrimary"
+        android:gravity="start" />
+
+
+
+</LinearLayout>
