@@ -2,10 +2,10 @@
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialKeyguardLayout="@layout/bake_widget"
     android:initialLayout="@layout/bake_widget"
-    android:minHeight="72dp"
-    android:minWidth="146dp"
+    android:minHeight="@dimen/widget_width"
+    android:minWidth="@dimen/widget_height"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="86400000"
+    android:updatePeriodMillis="180000"
     android:widgetCategory="home_screen">
 
 </appwidget-provider>

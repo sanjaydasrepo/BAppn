@@ -1,17 +1,18 @@
 package com.example.sang.bakingapp.ui;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,24 +21,31 @@ import android.widget.Toast;
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.modal.Steps;
 import com.example.sang.bakingapp.utils.BakingUtils;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
+import com.google.android.exoplayer2.extractor.ExtractorsFactory;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.BandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link ItemListActivity}
- * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
- * on handsets.
- */
+
 public class ItemDetailFragment extends Fragment {
 
     public static final String RECIPE_STEPS_KEY = "recipe_steps_key";
@@ -58,14 +66,23 @@ public class ItemDetailFragment extends Fragment {
     @BindView( R.id.tv_no_view_error)
     TextView tvErrorMsg;
 
-
-
-
     private boolean destroyVideo = true;
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen;
     private FrameLayout fullscreenButton;
     private SimpleExoPlayer player;
+    private static long playbackPosition = 0;
+    private int currentWindow = 0;
+    private boolean playWhenReady = true;
+
+    private String PLAYBACK_POSITION_KEY = "playbackPosition";
+    private Uri uri;
+    private BandwidthMeter bandwidthMeter;
+    private DefaultDataSourceFactory mediaDataSourceFactory;
+    private Timeline.Window window;
+    private DefaultTrackSelector trackSelector;
+    private Handler mainHandler;
+
 
     public ItemDetailFragment() {}
 
@@ -79,19 +96,29 @@ public class ItemDetailFragment extends Fragment {
         context = getContext();
 
 
+
         if (getArguments().containsKey(RECIPE_STEPS_KEY)
-                && getArguments().containsKey(ItemListActivity.SCREEN_TYPE)) {
+                && getArguments().containsKey(ItemListActivity.SCREEN_TYPE) ) {
 
             mItem = getArguments().getParcelable( RECIPE_STEPS_KEY );
             screenType = getArguments().getString( ItemListActivity.SCREEN_TYPE );
 
         }
-
         if( screenType.equals( ItemListActivity.TYPE_PORTRAIT )){
             layout =  R.layout.fragment_media_and_recipe_description;
         }else {
             layout = R.layout.fragment_media_and_recipe_description_horizontal;
         }
+
+
+        if( savedInstanceState != null &&
+                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )){
+                 playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
+
+        }
+
+
+        bandwidthMeter = new DefaultBandwidthMeter();
 
     }
 
@@ -110,8 +137,14 @@ public class ItemDetailFragment extends Fragment {
             }
          }
 
-         return view;
+        return view;
     }
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(PLAYBACK_POSITION_KEY , playbackPosition);
+    }
+
 
     @Override
     public void onStart() {
@@ -124,7 +157,6 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        hideSystemUi();
         if ((Util.SDK_INT <= 23 || player == null)) {
             initializePlayer();
         }
@@ -134,69 +166,85 @@ public class ItemDetailFragment extends Fragment {
     public void onPause() {
         super.onPause();
         if (Util.SDK_INT <= 23) {
-            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+            releasePlayer();
         }
-    }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (Util.SDK_INT > 23) {
-            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
+            releasePlayer();
         }
     }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        if(destroyVideo){
-            ExoPlayerVideoHandler.getInstance().releaseVideoPlayer();
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    private void hideSystemUi() {
-        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-    }
-
 
     private void initializePlayer() {
 
-       if( !BakingUtils.isOnline( context )){
-           Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)
-                   .show();
-           return;
-       }
 
-        if ( previewUrl != null && playerView !=null && !previewUrl.isEmpty()) {
-
-            Uri uri = Uri.parse(previewUrl);
-
-            player = ExoPlayerFactory.newSimpleInstance(
-                    new DefaultRenderersFactory(context),
-                    new DefaultTrackSelector(), new DefaultLoadControl());
-
-            ExoPlayerVideoHandler.getInstance().prepareExoPlayerForUri( context , uri , playerView ,player);
-            ExoPlayerVideoHandler.getInstance().goToForeground();
-
-            initFullscreenDialog();
-            initFullscreenButton();
-
+        if( !BakingUtils.isOnline( context )){
+            Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)
+                    .show();
+            return;
         }
-        else{
+
+        if(previewUrl == null || previewUrl.isEmpty()){
             showErrorMsg();
+            return;
         }
+
+
+        uri = Uri.parse( previewUrl );
+
+        if (player == null) {
+            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+            DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
+
+
+                player = ExoPlayerFactory.newSimpleInstance(context , trackSelector);
+
+                playerView.setPlayer(player);
+                player.setPlayWhenReady(playWhenReady);
+
+            boolean haveStartPosition = currentWindow != C.INDEX_UNSET;
+                if( haveStartPosition ){
+                 player.seekTo( currentWindow , playbackPosition);
+                }
+
+
+        MediaSource mediaSource = buildMediaSource(uri);
+        player.prepare(mediaSource, !haveStartPosition, true);
+        }
+        initFullscreenDialog();
+        initFullscreenButton();
+
+
+    }
+
+    private void releasePlayer() {
+        if (player != null) {
+            playbackPosition = player.getCurrentPosition();
+            player.release();
+            player = null;
+        }
+    }
+
+    private MediaSource buildMediaSource(Uri uri) {
+        DefaultBandwidthMeter bandwidthMeterA = new DefaultBandwidthMeter();
+
+        DefaultDataSourceFactory defaultDataSourceFactory =
+                new DefaultDataSourceFactory(context , "BakingApp" , bandwidthMeterA);
+
+        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
+
+         ExtractorMediaSource videoSource = new ExtractorMediaSource( uri , defaultDataSourceFactory , extractorsFactory ,null ,null);
+                return videoSource;
+    }
+
+
+    private void showErrorMsg() {
+        tvErrorMsg.setVisibility(View.VISIBLE);
+        playerView.setVisibility(View.GONE);
     }
 
     private void initFullscreenDialog() {
@@ -241,11 +289,4 @@ public class ItemDetailFragment extends Fragment {
             }
         });
     }
-
-    private void showErrorMsg() {
-        tvErrorMsg.setVisibility(View.VISIBLE);
-        playerView.setVisibility(View.GONE);
-    }
-
-
 }

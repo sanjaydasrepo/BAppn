@@ -4,16 +4,12 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.example.sang.bakingapp.R;
 
@@ -29,8 +25,13 @@ import butterknife.ButterKnife;
 public class ItemDetailActivity extends AppCompatActivity {
 
     @Nullable
+    @BindView(R.id.btn_layout)
+    LinearLayout btnLayout;
+
     @BindView(R.id.btn_nav_back)
     Button btnNavBack;
+
+    ItemDetailFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +40,12 @@ public class ItemDetailActivity extends AppCompatActivity {
         ButterKnife.bind( this );
 
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
 
             Bundle arguments = new Bundle();
+
             arguments.putParcelable(ItemDetailFragment.RECIPE_STEPS_KEY,
                     getIntent().getParcelableExtra(ItemDetailFragment.RECIPE_STEPS_KEY));
+
 
 
             int orientation = getResources().getConfiguration().orientation;
@@ -55,12 +54,12 @@ public class ItemDetailActivity extends AppCompatActivity {
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_PORTRAIT);
 
-                btnNavBack.setVisibility(View.VISIBLE);
+                btnLayout.setVisibility(View.VISIBLE);
             }else{
                 arguments.putString( ItemListActivity.SCREEN_TYPE ,
                         ItemListActivity.TYPE_HORIZONTAL);
 
-                btnNavBack.setVisibility(View.GONE);
+                btnLayout.setVisibility(View.GONE);
             }
 
 
@@ -73,16 +72,21 @@ public class ItemDetailActivity extends AppCompatActivity {
             });
         }
 
-            ItemDetailFragment fragment = new ItemDetailFragment();
+//
+//        if( orientation == Configuration.ORIENTATION_LANDSCAPE ){
+//            arguments.putBoolean(FULLSCREEN , true);
+//        }else{
+//            arguments.putBoolean(FULLSCREEN , false);
+//        }
 
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.item_detail_container, fragment)
-                    .commit();
-
-
+        fragment = new ItemDetailFragment();
+        fragment.setArguments(arguments);
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.item_detail_container, fragment)
+                .commit();
 
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
