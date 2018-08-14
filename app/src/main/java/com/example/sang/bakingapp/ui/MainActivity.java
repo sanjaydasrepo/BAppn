@@ -5,6 +5,10 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.sang.bakingapp.IdilingResource.SimpleIdlingResource;
 import com.example.sang.bakingapp.R;
 import com.example.sang.bakingapp.data.RequestInterface;
 import com.example.sang.bakingapp.modal.Recipe;
@@ -45,6 +50,20 @@ public class MainActivity extends AppCompatActivity implements RecipeAdapter.OnR
 
     private RecipeAdapter mRecipeAdapter;
 
+    @Nullable
+    private SimpleIdlingResource mIdlingResource;
+
+    /**
+     * Only called from test, creates and returns a new {@link SimpleIdlingResource}.
+     */
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null) {
+            mIdlingResource = new SimpleIdlingResource();
+        }
+        return mIdlingResource;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
