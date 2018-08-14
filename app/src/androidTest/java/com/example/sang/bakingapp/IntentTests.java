@@ -38,13 +38,13 @@ public class IntentTests {
     public IntentsTestRule<MainActivity> mActivityTestRule = new IntentsTestRule<MainActivity>(MainActivity.class);
 
     private IdlingResource mIdlingResource;
-
-    @Before
-    public void registerIdlingResource() {
-        mIdlingResource = mActivityTestRule.getActivity().getIdlingResource();
-        // To prove that the test fails, omit this call:
-        Espresso.registerIdlingResources(mIdlingResource);
-    }
+//
+//    @Before
+//    public void registerIdlingResource() {
+//        mIdlingResource = mActivityTestRule.getActivity().getIdlingResource();
+//        // To prove that the test fails, omit this call:
+//        Espresso.registerIdlingResources(mIdlingResource);
+//    }
 
     @Before
     public void stubAllExternalIntents() {
@@ -59,13 +59,13 @@ public class IntentTests {
         intended(hasComponent(ItemListActivity.class.getName()));
 
     }
-
-    @After
-    public void unregisterIdlingResource() {
-        if (mIdlingResource != null) {
-            Espresso.unregisterIdlingResources(mIdlingResource);
-        }
-    }
+//
+//    @After
+//    public void unregisterIdlingResource() {
+//        if (mIdlingResource != null) {
+//            Espresso.unregisterIdlingResources(mIdlingResource);
+//        }
+//    }
 
 
 }

@@ -3,6 +3,7 @@ package com.example.sang.bakingapp;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.IdlingResource;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import android.support.test.espresso.matcher.ViewMatchers;
@@ -45,46 +46,39 @@ public class ActivityTest {
     @Before
     public void registerIdlingResource() {
         mIdlingResource = mActivityTestRule.getActivity().getIdlingResource();
-        // To prove that the test fails, omit this call:-
-        registerIdlingResources(mIdlingResource);
+        // To prove that the test fails, omit this call:
+        IdlingRegistry.getInstance().register(mIdlingResource);
     }
 
     @Test
     public void checkText_MainActivity() {
 
-        onView(withId(R.id.rv_baking_list)).perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+        onView(ViewMatchers.withId(R.id.rv_baking_list)).perform(RecyclerViewActions.scrollToPosition(1));
+        onView(withText("Brownies")).check(matches(isDisplayed()));
+
+
     }
 
 
 
-//    @Test
-//    public void checkPlayerViewIsVisible_ItemActivity() {
-//       // onView(ViewMatchers.withId(R.id.rv_baking_list)).perform(RecyclerViewActions.scrollToPosition(0));
-//        onView(ViewMatchers.withId(R.id.rv_baking_list))
-//                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-//
-//        onView(ViewMatchers.withId(R.id.item_list)).
-//                perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
-//        onView(withId(R.id.audio_view)).check(matches(isDisplayed()));
-//    }
+    @Test
+    public void checkPlayerViewIsVisible_ItemActivity() {
 
-//    @Test
-//    public void scrollToItemBelowFold_checkItsText() {
-//        // First, scroll to the position that needs to be matched and click on it.
-//        onView(ViewMatchers.withId(R.id.rv_baking_list))
-//                .perform(RecyclerViewActions.actionOnItemAtPosition(0,
-//                        click()));
-//
-//        // Match the text in an item below the fold and check that it's displayed.
-//        String itemElementText = "Cheesecake";
-//        onView(withText(itemElementText)).check(matches(isDisplayed()));
-//    }
+        onView(ViewMatchers.withId(R.id.rv_baking_list))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+
+        onView(ViewMatchers.withId(R.id.item_list)).
+                perform(RecyclerViewActions.actionOnItemAtPosition(0,click()));
+        onView(withId(R.id.audio_view)).check(matches(isDisplayed()));
+    }
+
+
 
 //
     @After
     public void unregisterIdlingResource() {
         if (mIdlingResource != null) {
-            Espresso.unregisterIdlingResources(mIdlingResource);
+            IdlingRegistry.getInstance().unregister(mIdlingResource);
         }
     }
 
