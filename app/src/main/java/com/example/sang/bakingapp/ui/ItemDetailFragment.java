@@ -24,6 +24,7 @@ import com.example.sang.bakingapp.modal.Steps;
 import com.example.sang.bakingapp.utils.BakingUtils;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -75,23 +76,17 @@ public class ItemDetailFragment extends Fragment {
     @BindView(R.id.main_media_frame)
     FrameLayout mainFrameLayout;
 
-    private boolean destroyVideo = true;
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen;
     private FrameLayout fullscreenButton;
     private SimpleExoPlayer player;
-    private long playbackPosition = 0;
+    private static long playbackPosition = 0;
     private int currentWindow = 0;
-    private boolean playWhenReady = true;
+    private static boolean playWhenReady = true;
 
     private String PLAYBACK_POSITION_KEY = "playbackPosition";
     private String PLAYBACK_WHEN_READY = "playbackWhenReady";
     private Uri uri;
-    private BandwidthMeter bandwidthMeter;
-    private DefaultDataSourceFactory mediaDataSourceFactory;
-    private Timeline.Window window;
-    private DefaultTrackSelector trackSelector;
-    private Handler mainHandler;
 
 
     public ItemDetailFragment() {}
@@ -104,7 +99,6 @@ public class ItemDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         context = getContext();
-
 
 
         if (getArguments().containsKey(RECIPE_STEPS_KEY)
@@ -120,10 +114,15 @@ public class ItemDetailFragment extends Fragment {
             layout = R.layout.fragment_media_and_recipe_description_horizontal;
         }
 
+        if( savedInstanceState != null &&
+                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )
+                && savedInstanceState.containsKey(PLAYBACK_WHEN_READY)){
+            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
+            playWhenReady = savedInstanceState.getBoolean(PLAYBACK_WHEN_READY);
 
 
 
-        bandwidthMeter = new DefaultBandwidthMeter();
+        }
 
     }
 
@@ -143,15 +142,7 @@ public class ItemDetailFragment extends Fragment {
             }
          }
 
-        if( savedInstanceState != null &&
-                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )
-                && savedInstanceState.containsKey(PLAYBACK_WHEN_READY)){
-            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
-            playWhenReady = savedInstanceState.getBoolean(PLAYBACK_WHEN_READY);
 
-            Log.d("position", playbackPosition+" " + playWhenReady);
-
-        }
 
 
         return view;
@@ -159,12 +150,14 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-
         playbackPosition = player.getCurrentPosition();
         playWhenReady = player.getPlayWhenReady();
 
+
+
         outState.putLong(PLAYBACK_POSITION_KEY , playbackPosition);
         outState.putBoolean(PLAYBACK_WHEN_READY , playWhenReady);
+
 
     }
 
@@ -203,7 +196,7 @@ public class ItemDetailFragment extends Fragment {
     }
 
     private void initializePlayer() {
-
+        Log.d("position", playbackPosition+" " + playWhenReady);
 
         if( !BakingUtils.isOnline( context )){
             Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)
@@ -217,27 +210,19 @@ public class ItemDetailFragment extends Fragment {
             uri = Uri.parse(previewUrl);
 
             if (player == null) {
-                TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
-                DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-
-
-                player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
+                player = ExoPlayerFactory.newSimpleInstance(
+                        new DefaultRenderersFactory(context),
+                        new DefaultTrackSelector(), new DefaultLoadControl());
 
                 playerView.setPlayer(player);
-
                 player.setPlayWhenReady(playWhenReady);
-
-                boolean haveStartPosition = currentWindow != C.INDEX_UNSET;
-                if( haveStartPosition ){
-                    player.seekTo(currentWindow,  playbackPosition);
-                }
-
-                MediaSource mediaSource = buildMediaSource(uri);
-                player.prepare(mediaSource, !haveStartPosition, true);
-
-
+                player.seekTo( currentWindow , playbackPosition);
+                playerView.setControllerHideOnTouch(true);
 
             }
+
+            MediaSource mediaSource = buildMediaSource(uri);
+            player.prepare(mediaSource, false, true);
             initFullscreenDialog();
             initFullscreenButton();
         }
@@ -254,23 +239,16 @@ public class ItemDetailFragment extends Fragment {
 
     private void releasePlayer() {
         if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            playWhenReady = player.getPlayWhenReady();
+
             player.release();
             player = null;
         }
     }
 
     private MediaSource buildMediaSource(Uri uri) {
-        DefaultBandwidthMeter bandwidthMeterA = new DefaultBandwidthMeter();
-
-        DefaultDataSourceFactory defaultDataSourceFactory =
-                new DefaultDataSourceFactory(context , "BakingApp" , bandwidthMeterA);
-
-        ExtractorsFactory extractorsFactory = new DefaultExtractorsFactory();
-
-         ExtractorMediaSource videoSource = new ExtractorMediaSource( uri , defaultDataSourceFactory , extractorsFactory ,null ,null);
-                return videoSource;
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("exoplayer-mplayer")).
+                createMediaSource(uri);
     }
 
     private void showVideo() {
