@@ -83,6 +83,7 @@ public class ItemDetailFragment extends Fragment {
     private static long playbackPosition = 0;
     private int currentWindow = 0;
     private static boolean playWhenReady = true;
+    private boolean mFullScreen = false;
 
     private String PLAYBACK_POSITION_KEY = "playbackPosition";
     private String PLAYBACK_WHEN_READY = "playbackWhenReady";
@@ -110,7 +111,7 @@ public class ItemDetailFragment extends Fragment {
         }
         if( screenType.equals( ItemListActivity.TYPE_PORTRAIT )){
             layout =  R.layout.fragment_media_and_recipe_description;
-        }else {
+        }else if (screenType.equals( ItemListActivity.TYPE_HORIZONTAL )){
             layout = R.layout.fragment_media_and_recipe_description_horizontal;
         }
 
@@ -120,10 +121,7 @@ public class ItemDetailFragment extends Fragment {
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
             playWhenReady = savedInstanceState.getBoolean(PLAYBACK_WHEN_READY);
 
-
-
         }
-
     }
 
 
@@ -150,14 +148,13 @@ public class ItemDetailFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        playbackPosition = player.getCurrentPosition();
-        playWhenReady = player.getPlayWhenReady();
 
-
-
-        outState.putLong(PLAYBACK_POSITION_KEY , playbackPosition);
-        outState.putBoolean(PLAYBACK_WHEN_READY , playWhenReady);
-
+        if(player != null) {
+            playbackPosition = player.getCurrentPosition();
+            playWhenReady = player.getPlayWhenReady();
+            outState.putLong(PLAYBACK_POSITION_KEY, playbackPosition);
+            outState.putBoolean(PLAYBACK_WHEN_READY, playWhenReady);
+        }
 
     }
 
@@ -196,7 +193,6 @@ public class ItemDetailFragment extends Fragment {
     }
 
     private void initializePlayer() {
-        Log.d("position", playbackPosition+" " + playWhenReady);
 
         if( !BakingUtils.isOnline( context )){
             Toast.makeText( context , context.getString(R.string.network_error),Toast.LENGTH_LONG)

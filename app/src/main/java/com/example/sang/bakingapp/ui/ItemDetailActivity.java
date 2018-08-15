@@ -72,12 +72,6 @@ public class ItemDetailActivity extends AppCompatActivity {
             });
         }
 
-//
-//        if( orientation == Configuration.ORIENTATION_LANDSCAPE ){
-//            arguments.putBoolean(FULLSCREEN , true);
-//        }else{
-//            arguments.putBoolean(FULLSCREEN , false);
-//        }
 
         fragment = new ItemDetailFragment();
         fragment.setArguments(arguments);

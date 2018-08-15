@@ -13,16 +13,17 @@
             android:id="@+id/audio_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
+        <ImageView
+            android:id="@+id/iv_step_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:padding="10dp"
+            android:src="@drawable/icon_cupcake"/>
 
 
     </FrameLayout>
-    <ImageView
-        android:id="@+id/iv_step_image"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:background="#fafafa"
-        android:visibility="gone"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
