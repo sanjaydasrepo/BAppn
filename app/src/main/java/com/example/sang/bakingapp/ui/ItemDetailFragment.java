@@ -2,6 +2,7 @@ package com.example.sang.bakingapp.ui;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,6 +42,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,6 +54,7 @@ public class ItemDetailFragment extends Fragment {
 
     private Steps mItem;
     private String previewUrl;
+    private String thumbnailUrl;
     private Context context;
 
     @BindView(R.id.audio_view)
@@ -66,16 +69,23 @@ public class ItemDetailFragment extends Fragment {
     @BindView( R.id.tv_no_view_error)
     TextView tvErrorMsg;
 
+    @Nullable @BindView( R.id.iv_step_image)
+    ImageView ivStepImage;
+
+    @BindView(R.id.main_media_frame)
+    FrameLayout mainFrameLayout;
+
     private boolean destroyVideo = true;
     private Dialog mFullScreenDialog;
     private boolean mExoPlayerFullscreen;
     private FrameLayout fullscreenButton;
     private SimpleExoPlayer player;
-    private static long playbackPosition = 0;
+    private long playbackPosition = 0;
     private int currentWindow = 0;
     private boolean playWhenReady = true;
 
     private String PLAYBACK_POSITION_KEY = "playbackPosition";
+    private String PLAYBACK_WHEN_READY = "playbackWhenReady";
     private Uri uri;
     private BandwidthMeter bandwidthMeter;
     private DefaultDataSourceFactory mediaDataSourceFactory;
@@ -111,11 +121,6 @@ public class ItemDetailFragment extends Fragment {
         }
 
 
-        if( savedInstanceState != null &&
-                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )){
-                 playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
-
-        }
 
 
         bandwidthMeter = new DefaultBandwidthMeter();
@@ -131,18 +136,36 @@ public class ItemDetailFragment extends Fragment {
         ButterKnife.bind( this , view);
         if (mItem != null ) {
             previewUrl = mItem.getVideoURL();
+            thumbnailUrl = mItem.getThumbnailURL();
 
             if( screenType.equals( ItemListActivity.TYPE_PORTRAIT )){
                 textView.setText( mItem.getShortDescription() );
             }
          }
 
+        if( savedInstanceState != null &&
+                savedInstanceState.containsKey(PLAYBACK_POSITION_KEY )
+                && savedInstanceState.containsKey(PLAYBACK_WHEN_READY)){
+            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION_KEY);
+            playWhenReady = savedInstanceState.getBoolean(PLAYBACK_WHEN_READY);
+
+            Log.d("position", playbackPosition+" " + playWhenReady);
+
+        }
+
+
         return view;
     }
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        playbackPosition = player.getCurrentPosition();
+        playWhenReady = player.getPlayWhenReady();
+
         outState.putLong(PLAYBACK_POSITION_KEY , playbackPosition);
+        outState.putBoolean(PLAYBACK_WHEN_READY , playWhenReady);
+
     }
 
 
@@ -188,35 +211,43 @@ public class ItemDetailFragment extends Fragment {
             return;
         }
 
-        if(previewUrl == null || previewUrl.isEmpty()){
-            showErrorMsg();
-            return;
-        }
+
+        if( previewUrl != null && !previewUrl.isEmpty()) {
+            showVideo();
+            uri = Uri.parse(previewUrl);
+
+            if (player == null) {
+                TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
+                DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
 
 
-        uri = Uri.parse( previewUrl );
-
-        if (player == null) {
-            TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory(bandwidthMeter);
-            DefaultTrackSelector trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
-
-
-                player = ExoPlayerFactory.newSimpleInstance(context , trackSelector);
+                player = ExoPlayerFactory.newSimpleInstance(context, trackSelector);
 
                 playerView.setPlayer(player);
+
                 player.setPlayWhenReady(playWhenReady);
 
-            boolean haveStartPosition = currentWindow != C.INDEX_UNSET;
+                boolean haveStartPosition = currentWindow != C.INDEX_UNSET;
                 if( haveStartPosition ){
-                 player.seekTo( currentWindow , playbackPosition);
+                    player.seekTo(currentWindow,  playbackPosition);
                 }
 
+                MediaSource mediaSource = buildMediaSource(uri);
+                player.prepare(mediaSource, !haveStartPosition, true);
 
-        MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, !haveStartPosition, true);
+
+
+            }
+            initFullscreenDialog();
+            initFullscreenButton();
         }
-        initFullscreenDialog();
-        initFullscreenButton();
+        else if(thumbnailUrl != null && !thumbnailUrl.isEmpty()){
+            showImage();
+            Uri builtUri = Uri.parse(thumbnailUrl).buildUpon().build();
+            Picasso.with(getContext()).load(builtUri).into(ivStepImage);
+        }else{
+            showImage();
+        }
 
 
     }
@@ -224,6 +255,7 @@ public class ItemDetailFragment extends Fragment {
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();
+            playWhenReady = player.getPlayWhenReady();
             player.release();
             player = null;
         }
@@ -239,6 +271,18 @@ public class ItemDetailFragment extends Fragment {
 
          ExtractorMediaSource videoSource = new ExtractorMediaSource( uri , defaultDataSourceFactory , extractorsFactory ,null ,null);
                 return videoSource;
+    }
+
+    private void showVideo() {
+
+        playerView.setVisibility(View.VISIBLE);
+        ivStepImage.setVisibility(View.GONE);
+    }
+
+    private void showImage() {
+
+        playerView.setVisibility(View.GONE);
+        ivStepImage.setVisibility(View.VISIBLE);
     }
 
 

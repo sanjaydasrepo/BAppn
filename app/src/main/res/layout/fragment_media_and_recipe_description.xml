@@ -34,8 +34,16 @@
                 android:text="@string/video_not_available"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Display2"
                 android:visibility="invisible" />
+            <ImageView
+                android:id="@+id/iv_step_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:padding="10dp"
+                android:src="@drawable/icon_cupcake"/>
 
         </FrameLayout>
+
 
         <TextView
             android:id="@+id/tv_recipe_instruction"
